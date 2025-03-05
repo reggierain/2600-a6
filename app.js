@@ -89,3 +89,30 @@ app.post('/api/v1/shows', (req, res)=>{
 
 });
 
+app.get('/api/v1/shows', (req, res)=>{
+    database.collection("shows")
+    .aggregate([
+        {
+            $match: {}
+        },
+        {
+            $lookup: {
+                from: "actors",
+                localField: "topActors.actor_id",
+                foreignField: "_id",
+                as: "topActors"
+            }
+        },
+        {
+            $project: {
+                "topActors._id": 0,
+            }
+        }
+    ])
+    .toArray()
+    .then(shows=>res.json(shows))
+    .catch(e => {
+        console.dir(e, { depth: null });
+        res.status(500).send("Error");
+    });
+});
