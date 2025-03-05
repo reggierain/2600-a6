@@ -3,6 +3,7 @@ let app = express();
 
 import { connection, database } from './database.js';
 import setupCollections from './collections.js';
+import mongodb from 'mongodb';
 
 let server;
 connection
@@ -32,4 +33,59 @@ app.get("/", (req,res)=>{
 });
 
 // TODO: Routing logic
+app.post('/api/v1/actors', (req, res)=>{
+    const actorName = req.body.actorName.trim();
+    if (!actorName) {
+        return res.status(400).send('Error: Actor name field is empty. Please enter a valid name.<br><a href="/">Back</a>');
+    }
+    
+    let actorNameDocument = {
+        name: actorName
+    }
+
+    database.collection("actors").insertOne(actorNameDocument)
+    .then(()=>res.send(`<h1>Success: Actor Inserted</h1><br><a href="/">Back</a>`))
+    .catch(e=>{
+        console.dir(e, {depth: null});
+        res.status(500).send("Error!");
+    });
+});
+
+app.post('/api/v1/shows', (req, res)=>{
+    let showTitle = req.body.title.trim();
+    let showSeasons = Number(req.body.seasons);
+    let showYearStart = Number(req.body.year);
+    let actors = req.body.checkActor;
+    if (typeof actors === "string") {
+        actors = [actors];
+    }
+
+    if (!showTitle || !showSeasons || !showYearStart || actors.length === 0) {
+        return res.status(400).send('Error: All fields must be filled.<br><a href="/">Back</a>');
+    }
+
+    let showDocument = {
+        title: showTitle,
+        numberOfSeasons: showSeasons,
+        firstEpisodeYear: showYearStart,
+        topActors: []
+    }
+
+    actors.forEach(actorID=>{
+        showDocument.topActors.push(
+            {
+                actor_id: mongodb.ObjectId.createFromHexString(actorID)
+            }
+        );
+    });
+
+    database.collection("shows").insertOne(showDocument)
+        .then(() => res.send(`<h1>Success: Show Inserted</h1><br><a href="/">Back</a>`))
+        .catch(e => {
+            console.dir(e, { depth: null });
+            res.status(500).send("Error!");
+        }
+    );
+
+});
 
