@@ -1,9 +1,9 @@
-import express from 'express';
+import express from "express";
 const showsRouter = express.Router();
 
-import {postShows, getShows} from '../controllers/showsControllers.js';
+import { postShows, getShows } from "../controllers/showsControllers.js";
 
-showsRouter.post('/', postShows);
-showsRouter.get('/', getShows);
+showsRouter.post("/", postShows);
+showsRouter.get("/", getShows);
 
 export default showsRouter;

@@ -1,10 +1,10 @@
-import express from 'express';
+import express from "express";
 const router = express.Router();
 
-import actorsRouter from './actors.js';
-import showsRouter from './shows.js';
+import actorsRouter from "./actors.js";
+import showsRouter from "./shows.js";
 
-router.use('/actors', actorsRouter);
-router.use('/shows', showsRouter);
+router.use("/actors", actorsRouter);
+router.use("/shows", showsRouter);
 
 export default router;
